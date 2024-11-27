@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "astro-ai-video-recognition"
+version = "0.1.0"
+description = "Aplicacao que incorpora as técnicas de reconhecimento facial, análise de expressões emocionais em vídeos e detecção de atividades"
+authors = ["Rodrigo Zanel <rodrigozanelsp@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
