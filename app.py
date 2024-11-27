@@ -1,4 +1,5 @@
 import os
+
 import activity_detection as ad
 import activity_detection_actions as adw
 import facial_recognition as fr
@@ -13,6 +14,11 @@ def main():
     original_video_path = os.path.join(
         script_dir, 'resources/Unlocking Facial Recognition_ Diverse Activities Analysis.mp4'
     )
+
+    # original_video_path = os.path.join(
+    #    script_dir, 'resources/WIN_20241126_19_05_14_Pro.mp4'
+    # )
+
     output_video_emotions = os.path.join(script_dir, 'resources/output_video.mp4')
     output_video_pose = os.path.join(script_dir, 'resources/output_video_pose.mp4')
     output_video_pose_count = os.path.join(script_dir, 'resources/output_video_pose_count.mp4')
@@ -20,8 +26,11 @@ def main():
     text_output_path = os.path.join(script_dir, 'resources/transcription_audio.txt')
 
     # Step 1: Detect emotions in the video
-    # frame_count = fr.detect_emotions(original_video_path, output_video_emotions)
-    #print(f"Total frames analyzed: {frame_count}")
+    frame_count = fr.detect_emotions_with_rotations(original_video_path, output_video_emotions)
+    print(f"Total frames analyzed: {frame_count}")
+
+    # Step 1.2: Detect side faces in the video
+    # frame_count = frs.detect_emotions_and_side_faces(original_video_path, output_video_emotions)
 
     # Step 2: Detect poses in the video
     ad.detect_pose(output_video_emotions, output_video_pose)
