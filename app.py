@@ -26,8 +26,8 @@ def main():
     text_output_path = os.path.join(script_dir, 'resources/transcription_audio.txt')
 
     # Step 1: Detect emotions in the video
-    frame_count = fr.detect_emotions_with_rotations(original_video_path, output_video_emotions)
-    print(f"Total frames analyzed: {frame_count}")
+    #frame_count = fr.detect_emotions_with_rotations(original_video_path, output_video_emotions)
+    #print(f"Total frames analyzed: {frame_count}")
 
     # Step 1.2: Detect side faces in the video
     # frame_count = frs.detect_emotions_and_side_faces(original_video_path, output_video_emotions)

@@ -62,18 +62,36 @@ def detect_pose_and_count_actions(video_path, output_path):
 
     # Placeholder function: Detect a wave gesture
     def is_wave(landmarks):
-        # Placeholder for wave detection logic
+        if landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y < landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y and \
+                landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y < landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y:
+            return True
         return is_arm_up(landmarks)
 
     # Placeholder function: Detect a handshake
     def is_handshake(landmarks):
-        # Placeholder for handshake detection logic
+        if landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].x < landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x and \
+                landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].x > landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x:
+            return True
         return False
 
     # Placeholder function: Detect a nod gesture
     def is_nod(landmarks):
-        # Placeholder for nod detection logic
+        if landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y < landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y and \
+                landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y < landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y:
+            return True
         return False
+
+
+    def arms_down(landmarks):
+        left_elbow = landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value]
+        right_elbow = landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value]
+        left_eye = landmarks[mp_pose.PoseLandmark.LEFT_EYE.value]
+        right_eye = landmarks[mp_pose.PoseLandmark.RIGHT_EYE.value]
+
+        left_arm_down = left_elbow.y > left_eye.y
+        right_arm_down = right_elbow.y > right_eye.y
+
+        return left_arm_down and right_arm_down
 
     # Process each frame of the video with a progress bar
     for _ in tqdm(range(total_frames), desc="Processing video"):

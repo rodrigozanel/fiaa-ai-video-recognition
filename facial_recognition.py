@@ -22,7 +22,7 @@ def detect_emotions_with_rotations(video_path, output_path, library_path="librar
         int: Total number of frames analyzed.
     """
     # Load Haar Cascade for side-face detection
-    profile_face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_profileface.xml")
+    profile_face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
     if profile_face_cascade.empty():
         raise ValueError("Haar Cascade for profile faces could not be loaded. Check the path.")
 
