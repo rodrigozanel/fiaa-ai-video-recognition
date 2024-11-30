@@ -14,6 +14,10 @@ def main():
     original_video_path = os.path.join(
         script_dir, 'resources/Unlocking Facial Recognition_ Diverse Activities Analysis.mp4'
     )
+    # Paths for input and output files
+    original_video_path = os.path.join(
+        script_dir, 'videos/original_video.mp4'
+    )
 
     # original_video_path = os.path.join(
     #    script_dir, 'resources/WIN_20241126_19_05_14_Pro.mp4'
@@ -32,11 +36,14 @@ def main():
     # Step 1.2: Detect side faces in the video
     # frame_count = frs.detect_emotions_and_side_faces(original_video_path, output_video_emotions)
 
+    #fr.detect_emotions_with_rotations(original_video_path, output_video_emotions, library_path="images2")
+    #fr.main()
+
     # Step 2: Detect poses in the video
-    ad.detect_pose(output_video_emotions, output_video_pose)
+    #ad.detect_pose(original_video_path, output_video_pose)
 
     # Step 3: Detect and count actions (e.g., waving) in the video
-    adw.detect_pose_and_count_actions(output_video_pose, output_video_pose_count)
+    adw.detect_pose_and_count_actions(original_video_path, output_video_pose_count)
 
     # Step 4: Extract audio from the original video
     vt.extract_audio_from_video(original_video_path, output_audio_path)

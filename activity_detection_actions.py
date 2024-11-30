@@ -2,53 +2,49 @@ import cv2
 import mediapipe as mp
 from tqdm import tqdm
 
-
 def detect_pose_and_count_actions(video_path, output_path):
     """
-    Detect poses and count actions (arm movements, waves, handshakes, nods) in a video,
-    and save the output video with annotations.
+    Detecta poses e conta ações (movimentos de braço, acenos, apertos de mão, acenos de cabeça) em um vídeo,
+    salvando o vídeo de saída com anotações.
 
     Args:
-        video_path (str): Path to the input video file.
-        output_path (str): Path to save the output annotated video.
+        video_path (str): Caminho para o arquivo de vídeo de entrada.
+        output_path (str): Caminho para salvar o vídeo de saída anotado.
     """
-    # Initialize MediaPipe Pose and Drawing utilities
+    # Inicializa os utilitários do MediaPipe para pose e desenho
     mp_pose = mp.solutions.pose
     pose = mp_pose.Pose()
     mp_drawing = mp.solutions.drawing_utils
 
-    # Open the input video file
+    # Abre o arquivo de vídeo de entrada
     cap = cv2.VideoCapture(video_path)
 
-    # Check if the video was successfully opened
+    # Verifica se o vídeo foi aberto com sucesso
     if not cap.isOpened():
-        print("Error: Unable to open the video file.")
+        print("Erro: Não foi possível abrir o arquivo de vídeo.")
         return
 
-    # Get video properties
+    # Obtém as propriedades do vídeo
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = int(cap.get(cv2.CAP_PROP_FPS))
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
-    # Define the codec and create a VideoWriter object
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # MP4 codec
+    # Define o codec e cria o objeto VideoWriter
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Codec para MP4
     out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
 
-    # Initialize counters and flags
+    # Inicializa contadores e flags
     arm_up = False
     arm_movements_count = 0
-
     wave = False
     wave_count = 0
-
     handshake = False
     handshake_count = 0
-
     nod = False
     nod_count = 0
 
-    # Helper function: Check if an arm is raised
+    # Função auxiliar: Verifica se um braço está levantado
     def is_arm_up(landmarks):
         left_elbow = landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value]
         right_elbow = landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value]
@@ -60,56 +56,53 @@ def detect_pose_and_count_actions(video_path, output_path):
 
         return left_arm_up or right_arm_up
 
-    # Placeholder function: Detect a wave gesture
+    # Função auxiliar: Detecta gesto de aceno
     def is_wave(landmarks):
-        if landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y < landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y and \
-                landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y < landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y:
-            return True
-        return is_arm_up(landmarks)
-
-    # Placeholder function: Detect a handshake
-    def is_handshake(landmarks):
-        if landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].x < landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x and \
-                landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].x > landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x:
-            return True
-        return False
-
-    # Placeholder function: Detect a nod gesture
-    def is_nod(landmarks):
-        if landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y < landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y and \
-                landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y < landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y:
-            return True
-        return False
-
-
-    def arms_down(landmarks):
+        left_wrist = landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value]
+        right_wrist = landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value]
         left_elbow = landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value]
         right_elbow = landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value]
-        left_eye = landmarks[mp_pose.PoseLandmark.LEFT_EYE.value]
-        right_eye = landmarks[mp_pose.PoseLandmark.RIGHT_EYE.value]
 
-        left_arm_down = left_elbow.y > left_eye.y
-        right_arm_down = right_elbow.y > right_eye.y
+        return (left_wrist.y < left_elbow.y) or (right_wrist.y < right_elbow.y)
 
-        return left_arm_down and right_arm_down
+    # Função auxiliar: Detecta gesto de aperto de mão
+    def is_handshake(landmarks):
+        left_wrist = landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value]
+        right_wrist = landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value]
+        left_shoulder = landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value]
+        right_shoulder = landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value]
 
-    # Process each frame of the video with a progress bar
-    for _ in tqdm(range(total_frames), desc="Processing video"):
+        return (left_wrist.x < left_shoulder.x) and (right_wrist.x > right_shoulder.x)
+
+    # Função auxiliar: Detecta gesto de aceno de cabeça
+    def is_nod(landmarks):
+        nose = landmarks[mp_pose.PoseLandmark.NOSE.value]
+        left_shoulder = landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value]
+        right_shoulder = landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value]
+
+        return nose.y < ((left_shoulder.y + right_shoulder.y) / 2)
+
+    # Processa cada quadro do vídeo com barra de progresso
+    for _ in tqdm(range(total_frames), desc="Processando vídeo"):
         ret, frame = cap.read()
 
         if not ret:
-            break  # End of video
+            break  # Fim do vídeo
 
-        # Convert the frame to RGB for MediaPipe processing
+        # Converte o quadro para RGB para processamento com MediaPipe
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-        # Process the frame to detect pose landmarks
+        # Processa o quadro para detectar os marcos da pose
         results = pose.process(rgb_frame)
 
+        # Mostra o frame
+        cv2.imshow("Frame", frame)
+
         if results.pose_landmarks:
+            # Desenha os marcos da pose no quadro
             mp_drawing.draw_landmarks(frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
 
-            # Count arm movements
+            # Conta movimentos de braço
             if is_arm_up(results.pose_landmarks.landmark):
                 if not arm_up:
                     arm_up = True
@@ -117,7 +110,7 @@ def detect_pose_and_count_actions(video_path, output_path):
             else:
                 arm_up = False
 
-            # Count wave gestures
+            # Conta gestos de aceno
             if is_wave(results.pose_landmarks.landmark):
                 if not wave:
                     wave = True
@@ -125,7 +118,7 @@ def detect_pose_and_count_actions(video_path, output_path):
             else:
                 wave = False
 
-            # Count handshake gestures
+            # Conta gestos de aperto de mão
             if is_handshake(results.pose_landmarks.landmark):
                 if not handshake:
                     handshake = True
@@ -133,7 +126,7 @@ def detect_pose_and_count_actions(video_path, output_path):
             else:
                 handshake = False
 
-            # Count nod gestures
+            # Conta gestos de aceno de cabeça
             if is_nod(results.pose_landmarks.landmark):
                 if not nod:
                     nod = True
@@ -141,25 +134,21 @@ def detect_pose_and_count_actions(video_path, output_path):
             else:
                 nod = False
 
-            # Display counters on the frame
-            cv2.putText(frame, f'Arm Movements: {arm_movements_count}', (10, 30),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2, cv2.LINE_AA)
-            cv2.putText(frame, f'Waves: {wave_count}', (10, 60),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2, cv2.LINE_AA)
-            cv2.putText(frame, f'Handshakes: {handshake_count}', (10, 90),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2, cv2.LINE_AA)
-            cv2.putText(frame, f'Nods: {nod_count}', (10, 120),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2, cv2.LINE_AA)
+            # Exibe os contadores no quadro
+            cv2.putText(frame, f'Bracos levantados: {arm_movements_count}', (10, 30),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (36, 255, 12), 2, cv2.LINE_AA)
+            cv2.putText(frame, f'Acenos: {wave_count}', (10, 60),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (36, 255, 12), 2, cv2.LINE_AA)
+            cv2.putText(frame, f'Apertos de Mao: {handshake_count}', (10, 90),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (36, 255, 12), 2, cv2.LINE_AA)
+            cv2.putText(frame, f'Acenos de Cabeca: {nod_count}', (10, 120),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (36, 255, 12), 2, cv2.LINE_AA)
 
-        # Write the processed frame to the output video
+        # Escreve o quadro processado no vídeo de saída
         out.write(frame)
 
-        # Optional: Display the frame (disabled for non-interactive environments)
-        # cv2.imshow('Pose Detection', frame)
-        # if cv2.waitKey(1) & 0xFF == ord('q'):
-        #     break
-
-    # Release resources
+    # Libera os recursos
     cap.release()
     out.release()
     cv2.destroyAllWindows()
+
