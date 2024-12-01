@@ -1,6 +1,8 @@
 # pip install deepface keras tensorflow opencv-python-headless tqdm numpy matplotlib dlib mtcnn keras_vggface keras-models keras-layers
 import os
 import re
+import time
+
 import cv2
 from deepface import DeepFace
 from tqdm import tqdm
@@ -23,9 +25,9 @@ def detect_emotions(video_path, output_path, images_path, qtd_frames, model_name
     # Configurar o codec e criar o objeto VideoWriter
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
-    qtd_frames = 10
     detected_face_counter = 1
     frame_counter = 0
+    total_numer_dif_faces = 0
 
     # Processar cada frame do vídeo
     for _ in tqdm(range(total_frames), desc="Processando vídeo"):
@@ -33,11 +35,6 @@ def detect_emotions(video_path, output_path, images_path, qtd_frames, model_name
 
         if not ret:
             break
-
-        # Skip each qtd_frames frames
-        if frame_counter != 0:
-            frame_counter = (frame_counter + 1) % qtd_frames
-            continue
 
         original_frame = frame.copy()
 
@@ -83,9 +80,9 @@ def detect_emotions(video_path, output_path, images_path, qtd_frames, model_name
                     if result[0].empty:
                         offset = 80
                         face_img_to_save = original_frame[
-                            max(0, y - offset):y + h + offset,
-                            max(0, x - offset):x + w + offset
-                        ]
+                                           max(0, y - offset):y + h + offset,
+                                           max(0, x - offset):x + w + offset
+                                           ]
                         cv2.imwrite(f"{images_path}/pessoa_{detected_face_counter}.jpg", face_img_to_save)
                         person = f"pessoa_{detected_face_counter}"
                         detected_face_counter += 1
@@ -97,23 +94,29 @@ def detect_emotions(video_path, output_path, images_path, qtd_frames, model_name
                     cv2.putText(frame, text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, emotion_color, 2)
 
                     # display the frame
-                    #cv2.imshow("Frame", frame)
+                    # cv2.imshow("Frame", frame)
 
         # Escrever o frame processado no vídeo de saída
         out.write(frame)
         frame_counter = (frame_counter + 1) % qtd_frames
 
     # Liberar recursos
+    # Printa numero total de frames analisados
+    print(f"Total de frames analisados: {total_frames}")
+    print(f"Total de faces detectadas: {detected_face_counter - 1}")
     cap.release()
     out.release()
     cv2.destroyAllWindows()
 
 
 def main():
+    # Inicia a contagem do tempo total de processamento
+    start_time = time.time()
+    print("Iniciando a detecção de emoções...")
     # Configurar caminhos e parâmetros
     script_dir = os.path.dirname(os.path.abspath(__file__))
     input_video_path = os.path.join(script_dir, 'videos/original_video.mp4')
-    output_video_path = os.path.join(script_dir, 'videos/video_expression_detect_retina_face.mp4')
+    output_video_path = os.path.join(script_dir, 'videos/output_face_detection_video.mp4')
     images_path = os.path.join(script_dir, 'images2')
     qtd_frames = 10
 
@@ -132,6 +135,13 @@ def main():
 
     # Detetar emoções no vídeo
     detect_emotions(input_video_path, output_video_path, images_path, qtd_frames, models[0])
+
+    # Printa a hora de término
+    print("Detecção de emoções finalizada.")
+    end_time = time.time()
+
+    # Mostra o tempo total de processamento
+    print(f"Tempo total de processamento: {end_time - start_time:.2f} segundos.")
 
 
 if __name__ == '__main__':

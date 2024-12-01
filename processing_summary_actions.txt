@@ -1,0 +1,10 @@
+Identificao de Gestos e Movimentos - Total de frames analisados: 3326
+Identificao de Gestos e Movimentos - Total de gestos detectados: 9
+Identificao de Gestos e Movimentos - Hora de inicio: 1733041583.3245878
+Identificao de Gestos e Movimentos - Hora de fim: 1733041743.1531212
+Identificao de Gestos e Movimentos - Tempo de execução: 159.828533411026
+Identificao de Gestos e Movimentos - Bracos levantados: 19
+Identificao de Gestos e Movimentos - Movimentos de maos: 67
+Identificao de Gestos e Movimentos - Apertos de Mao: 48
+Identificao de Gestos e Movimentos - Movimentos de Cabeca: 12
+Identificao de Gestos e Movimentos - Movimentos Anomalos: 1

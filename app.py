@@ -37,7 +37,7 @@ def main():
     # frame_count = frs.detect_emotions_and_side_faces(original_video_path, output_video_emotions)
 
     #fr.detect_emotions_with_rotations(original_video_path, output_video_emotions, library_path="images2")
-    #fr.main()
+    fr.main()
 
     # Step 2: Detect poses in the video
     #ad.detect_pose(original_video_path, output_video_pose)
@@ -46,10 +46,10 @@ def main():
     adw.detect_pose_and_count_actions(original_video_path, output_video_pose_count)
 
     # Step 4: Extract audio from the original video
-    vt.extract_audio_from_video(original_video_path, output_audio_path)
+    #vt.extract_audio_from_video(original_video_path, output_audio_path)
 
     # Step 5: Transcribe audio to text
-    vt.transcribe_audio_to_text(output_audio_path, text_output_path)
+    #vt.transcribe_audio_to_text(output_audio_path, text_output_path)
 
 
 if __name__ == '__main__':
