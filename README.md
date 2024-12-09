@@ -1,5 +1,26 @@
 # fiaa-ai-video-recognition
-FIAP IA4Devs - Video Recognition
+FIAP IA4Devs - Tech Challenge 4 - Análise Vídeo - Grupo 7
+
+Integrantes
+```
+Adriano Marques da Costa
+Luiz Carlos Fraga e Silva Júnior
+Rodrigo Zanel de Souza Pinheiro
+Weberton Eugênio de Faria
+```
+
+Objetivos
+```
+#1 
+Identificação das faces 
+Reconhecimento de emoções
+
+#2
+Identificação dos movimentos
+
+#3
+Movimentos anômalos
+```
 
 Execucao Reconhecimento Facial
 ```
